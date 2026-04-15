@@ -384,9 +384,19 @@ chrome.runtime.onMessage.addListener(function(mensagem, remetente, enviarRespost
 });
 
 // ============================================================
-// PASSO 12: Login com tecla Enter
+// PASSO 12: Event listeners dos botões e tecla Enter
 // ============================================================
 
+// Botão de login
+document.getElementById('botao-login').addEventListener('click', fazerLogin);
+
+// Botão de logout (sair)
+document.getElementById('botao-sair').addEventListener('click', fazerLogout);
+
+// Botão de atualizar mensagens
+document.getElementById('botao-atualizar').addEventListener('click', carregarMensagens);
+
+// Login com tecla Enter
 document.addEventListener('keypress', function(evento) {
     if (evento.key === 'Enter') {
         let campoUsername = document.getElementById('campo-username');

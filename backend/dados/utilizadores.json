@@ -1,1 +1,23 @@
-[]
+[
+  {
+    "id": 1,
+    "username": "coordenador",
+    "password": "$2a$10$SNPfJQ4jInwb9GXCH5wU3OhQkM2uHUy/qiKUK2uRgTnI9dDY4.DTS",
+    "role": "coordenador",
+    "nome": "João Silva (Coordenador)"
+  },
+  {
+    "id": 2,
+    "username": "operador",
+    "password": "$2a$10$R4pehJYR4modngUiev1ge.25eHphnSd0fZ9TwMbiQAQe0u31/fH8u",
+    "role": "operador",
+    "nome": "Maria Santos (Operadora)"
+  },
+  {
+    "id": 3,
+    "username": "Miguelito",
+    "password": "$2a$10$8WAGrqruaRWbnpD7FK1W1uJwK.INiNFptFQ/lVfWhPetocP5Kyzqa",
+    "role": "operador",
+    "nome": "Miguel Serafim"
+  }
+]

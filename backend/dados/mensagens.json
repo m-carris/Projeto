@@ -1,1 +1,32 @@
-[]
+[
+  {
+    "id": 1,
+    "conteudo": "Atenção: acidente reportado na zona. Proceder com cuidado e seguir desvios indicados.",
+    "prioridade": "alta",
+    "tipo": "acidente",
+    "destinatario": "todos",
+    "remetenteId": 1,
+    "remetenteNome": "João Silva (Coordenador)",
+    "criadaEm": "2026-04-15T12:39:47.642Z"
+  },
+  {
+    "id": 2,
+    "conteudo": "Um autocarro tá com problemas de juntas!!!!",
+    "prioridade": "alta",
+    "tipo": "avaria",
+    "destinatario": "todos",
+    "remetenteId": 1,
+    "remetenteNome": "João Silva (Coordenador)",
+    "criadaEm": "2026-04-15T12:42:00.227Z"
+  },
+  {
+    "id": 3,
+    "conteudo": "Informação: viatura com avaria reportada. Aguardar instruções de substituição.",
+    "prioridade": "alta",
+    "tipo": "avaria",
+    "destinatario": "todos",
+    "remetenteId": 1,
+    "remetenteNome": "João Silva (Coordenador)",
+    "criadaEm": "2026-04-15T12:42:29.940Z"
+  }
+]
