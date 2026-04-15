@@ -1,0 +1,805 @@
+/* ============================================================
+   ESTILO.CSS — Estilos do Backoffice (Coordenador)
+   ============================================================
+   Este ficheiro define a aparência visual do backoffice.
+   
+   Paleta de cores da Carris:
+   - Amarelo Carris: #FFD200 (cor principal da marca)
+   - Preto Carris:   #1D1D1B (texto e elementos escuros)
+   - Branco:         #FFFFFF (fundos e textos claros)
+   - Cinzento Claro: #F5F5F5 (fundos de secções)
+   - Cinzento Médio: #E0E0E0 (bordas e separadores)
+   - Cinzento Escuro: #333333 (texto secundário)
+   - Vermelho Alta:  #DC3545 (destaque para prioridade alta)
+   ============================================================ */
+
+/* ---- Reset básico ---- */
+/* Remover margens e paddings padrão de todos os elementos */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* ---- Corpo da página ---- */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #F5F5F5;
+    color: #1D1D1B;
+    min-height: 100vh;
+}
+
+/* ============================================================
+   SECÇÃO DE LOGIN
+   ============================================================ */
+
+/* Fundo escuro que ocupa o ecrã todo */
+#secao-login {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #1D1D1B;
+}
+
+/* Caixa central do login (caixa branca) */
+#login-caixa {
+    background-color: #FFFFFF;
+    border-radius: 12px;
+    padding: 40px;
+    width: 400px;
+    max-width: 90%;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+/* Cabeçalho do login (logo + títulos) */
+#login-cabecalho {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+/* Emoji do logo (tamanho grande) */
+#login-logo {
+    font-size: 48px;
+    margin-bottom: 10px;
+}
+
+/* Título "Carris" */
+#login-cabecalho h1 {
+    color: #1D1D1B;
+    font-size: 28px;
+    margin-bottom: 5px;
+}
+
+/* Subtítulo "Sistema de Notificações" */
+#login-cabecalho p {
+    color: #666666;
+    font-size: 14px;
+}
+
+/* Subtítulo "Backoffice do Coordenador" */
+#login-subtitulo {
+    margin-top: 4px;
+    color: #999999 !important;
+    font-size: 12px !important;
+}
+
+/* ---- Formulário de Login ---- */
+/* Cada campo do formulário (label + input) */
+.campo-formulario {
+    margin-bottom: 16px;
+}
+
+/* Labels dos campos */
+.campo-formulario label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: bold;
+    font-size: 14px;
+    color: #333333;
+}
+
+/* Campos de input (texto, password) */
+.campo-formulario input[type="text"],
+.campo-formulario input[type="password"],
+.campo-formulario input[type="date"],
+.campo-formulario textarea,
+.campo-formulario select {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #E0E0E0;
+    border-radius: 8px;
+    font-size: 14px;
+    color: #1D1D1B;
+    background-color: #FFFFFF;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+/* Quando o input está selecionado (em foco) */
+.campo-formulario input:focus,
+.campo-formulario textarea:focus,
+.campo-formulario select:focus {
+    border-color: #FFD200;
+}
+
+/* Mensagem de erro no login */
+.mensagem-erro {
+    color: #DC3545;
+    font-size: 13px;
+    margin-bottom: 12px;
+    display: none;
+}
+
+/* Botão de entrar no login */
+#login-botao {
+    width: 100%;
+    padding: 14px;
+    background-color: #FFD200;
+    color: #1D1D1B;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+/* Efeito quando o cursor está sobre o botão */
+#login-botao:hover {
+    background-color: #E6BD00;
+}
+
+/* Dica das contas de teste */
+#login-dica {
+    margin-top: 24px;
+    padding: 12px;
+    background-color: #F5F5F5;
+    border-radius: 8px;
+    font-size: 12px;
+    color: #666666;
+    text-align: center;
+}
+
+#login-dica p {
+    margin-bottom: 4px;
+}
+
+#login-dica code {
+    background-color: #E0E0E0;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 12px;
+}
+
+/* ============================================================
+   BARRA DE NAVEGAÇÃO (topo)
+   ============================================================ */
+
+#barra-navegacao {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #1D1D1B;
+    padding: 0 20px;
+    height: 56px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* Parte esquerda: Logo + Título */
+#nav-esquerda {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+#nav-logo {
+    font-size: 24px;
+}
+
+#nav-titulo {
+    color: #FFD200;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+/* Parte central: Botões de navegação */
+#nav-centro {
+    display: flex;
+    gap: 4px;
+}
+
+/* Botões de navegação */
+.nav-botao {
+    background: none;
+    border: none;
+    color: #CCCCCC;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13px;
+    transition: all 0.2s;
+}
+
+.nav-botao:hover {
+    background-color: #333333;
+    color: #FFFFFF;
+}
+
+/* Botão de navegação ativo (página atual) */
+.nav-botao-ativo {
+    background-color: #FFD200;
+    color: #1D1D1B;
+    font-weight: bold;
+}
+
+.nav-botao-ativo:hover {
+    background-color: #E6BD00;
+    color: #1D1D1B;
+}
+
+/* Parte direita: Conexão + Nome + Sair */
+#nav-direita {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+/* Indicador de conexão WebSocket */
+#indicador-conexao {
+    font-size: 12px;
+    padding: 4px 8px;
+    border-radius: 12px;
+}
+
+.indicador-conectado {
+    color: #28A745;
+    background-color: rgba(40, 167, 69, 0.15);
+}
+
+.indicador-desconectado {
+    color: #DC3545;
+    background-color: rgba(220, 53, 69, 0.15);
+}
+
+/* Nome do utilizador na navbar */
+#nav-nome-utilizador {
+    color: #FFFFFF;
+    font-size: 13px;
+}
+
+/* Botão de sair */
+#nav-botao-sair {
+    background-color: transparent;
+    border: 1px solid #666666;
+    color: #CCCCCC;
+    padding: 6px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 12px;
+    transition: all 0.2s;
+}
+
+#nav-botao-sair:hover {
+    background-color: #DC3545;
+    border-color: #DC3545;
+    color: #FFFFFF;
+}
+
+/* ============================================================
+   CONTEÚDO PRINCIPAL
+   ============================================================ */
+
+/* Área de conteúdo (abaixo da navbar) */
+#conteudo-principal {
+    margin-top: 56px;
+    padding: 24px;
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Títulos das páginas */
+#conteudo-principal h2 {
+    font-size: 22px;
+    margin-bottom: 20px;
+    color: #1D1D1B;
+}
+
+#conteudo-principal h3 {
+    font-size: 16px;
+    margin-bottom: 12px;
+    color: #333333;
+}
+
+/* Texto de ajuda (cinzento, menor) */
+.texto-ajuda {
+    color: #999999;
+    font-size: 13px;
+}
+
+/* ============================================================
+   PÁGINA: ENVIAR MENSAGEM
+   ============================================================ */
+
+/* Layout de duas colunas */
+#enviar-layout {
+    display: flex;
+    gap: 24px;
+}
+
+/* Coluna esquerda (formulário) - 60% */
+#enviar-formulario-area {
+    flex: 3;
+}
+
+/* Coluna direita (últimas mensagens) - 40% */
+#ultimas-mensagens-area {
+    flex: 2;
+}
+
+/* ---- Templates (Mensagens Rápidas) ---- */
+#templates-area {
+    background-color: #FFFFFF;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 20px;
+    border: 1px solid #E0E0E0;
+}
+
+/* Container dos botões de template */
+#templates-botoes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+/* Botões individuais de template */
+.template-botao {
+    padding: 10px 16px;
+    border: 2px solid #E0E0E0;
+    border-radius: 8px;
+    background-color: #FFFFFF;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: bold;
+    transition: all 0.2s;
+}
+
+.template-botao:hover {
+    border-color: #FFD200;
+    background-color: #FFFAE6;
+}
+
+/* Template de prioridade alta (destaque vermelho) */
+.template-botao-alta {
+    border-color: #DC3545;
+    color: #DC3545;
+}
+
+.template-botao-alta:hover {
+    background-color: #FFF0F0;
+    border-color: #DC3545;
+}
+
+/* Template de prioridade normal */
+.template-botao-normal {
+    border-color: #28A745;
+    color: #28A745;
+}
+
+.template-botao-normal:hover {
+    background-color: #F0FFF0;
+}
+
+/* ---- Formulário de Mensagem ---- */
+#formulario-mensagem {
+    background-color: #FFFFFF;
+    border-radius: 10px;
+    padding: 20px;
+    border: 1px solid #E0E0E0;
+}
+
+/* Área de texto da mensagem */
+#mensagem-conteudo {
+    resize: vertical;
+    min-height: 80px;
+}
+
+/* ---- Botões de Prioridade ---- */
+#prioridade-opcoes {
+    display: flex;
+    gap: 10px;
+}
+
+.prioridade-botao {
+    flex: 1;
+    padding: 12px;
+    border: 2px solid #E0E0E0;
+    border-radius: 8px;
+    background-color: #FFFFFF;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: bold;
+    text-align: center;
+    transition: all 0.2s;
+}
+
+/* Prioridade selecionada */
+.prioridade-selecionada {
+    border-color: #FFD200;
+    background-color: #FFFAE6;
+}
+
+/* Prioridade Alta selecionada (destaque vermelho forte) */
+#prioridade-alta.prioridade-selecionada {
+    border-color: #DC3545;
+    background-color: #FFF0F0;
+    color: #DC3545;
+}
+
+/* ---- Feedback de envio ---- */
+#enviar-feedback {
+    margin-bottom: 12px;
+    padding: 10px;
+    border-radius: 8px;
+    font-size: 13px;
+    display: none;
+}
+
+.feedback-sucesso {
+    background-color: #D4EDDA;
+    color: #155724;
+    border: 1px solid #C3E6CB;
+}
+
+.feedback-erro {
+    background-color: #F8D7DA;
+    color: #721C24;
+    border: 1px solid #F5C6CB;
+}
+
+/* ---- Botão de Enviar Mensagem ---- */
+#botao-enviar {
+    width: 100%;
+    padding: 14px;
+    background-color: #FFD200;
+    color: #1D1D1B;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+#botao-enviar:hover {
+    background-color: #E6BD00;
+}
+
+/* ---- Lista de Últimas Mensagens ---- */
+#ultimas-mensagens-area {
+    background-color: #FFFFFF;
+    border-radius: 10px;
+    padding: 20px;
+    border: 1px solid #E0E0E0;
+    max-height: calc(100vh - 120px);
+    overflow-y: auto;
+}
+
+#ultimas-mensagens-lista {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* ============================================================
+   CARDS DE MENSAGEM (usados em várias páginas)
+   ============================================================ */
+
+/* Card individual de mensagem */
+.mensagem-card {
+    background-color: #FFFFFF;
+    border: 1px solid #E0E0E0;
+    border-radius: 8px;
+    padding: 14px;
+    border-left: 4px solid #E0E0E0;
+}
+
+/* Card de mensagem com prioridade ALTA */
+.mensagem-card-alta {
+    border-left-color: #DC3545;
+    background-color: #FFF8F8;
+}
+
+/* Cabeçalho do card (data + badge) */
+.mensagem-card-cabecalho {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+/* Data/hora da mensagem */
+.mensagem-data {
+    font-size: 12px;
+    color: #999999;
+}
+
+/* Badge de prioridade */
+.badge-prioridade {
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+/* Badge Normal */
+.badge-normal {
+    background-color: #E8F5E9;
+    color: #2E7D32;
+}
+
+/* Badge Alta (destaque forte) */
+.badge-alta {
+    background-color: #FFEBEE;
+    color: #C62828;
+}
+
+/* Conteúdo da mensagem */
+.mensagem-conteudo {
+    font-size: 14px;
+    line-height: 1.5;
+    color: #1D1D1B;
+    margin-bottom: 8px;
+}
+
+/* Rodapé do card (tipo + remetente) */
+.mensagem-card-rodape {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: #999999;
+}
+
+/* Badge de tipo de mensagem */
+.badge-tipo {
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    background-color: #F5F5F5;
+    color: #666666;
+}
+
+/* ============================================================
+   PÁGINA: HISTÓRICO DE MENSAGENS
+   ============================================================ */
+
+/* Barra de filtros */
+#historico-filtros {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: flex-end;
+    background-color: #FFFFFF;
+    padding: 16px;
+    border-radius: 10px;
+    border: 1px solid #E0E0E0;
+    margin-bottom: 20px;
+}
+
+/* Cada campo de filtro */
+.filtro-campo {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.filtro-campo label {
+    font-size: 12px;
+    font-weight: bold;
+    color: #666666;
+}
+
+.filtro-campo input,
+.filtro-campo select {
+    padding: 8px 12px;
+    border: 1px solid #E0E0E0;
+    border-radius: 6px;
+    font-size: 13px;
+    outline: none;
+}
+
+.filtro-campo input:focus,
+.filtro-campo select:focus {
+    border-color: #FFD200;
+}
+
+/* Botão de pesquisar nos filtros */
+#botao-filtrar {
+    padding: 8px 20px;
+    background-color: #FFD200;
+    color: #1D1D1B;
+    border: none;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 13px;
+}
+
+#botao-filtrar:hover {
+    background-color: #E6BD00;
+}
+
+/* Botão de limpar filtros */
+#botao-limpar-filtros {
+    padding: 8px 20px;
+    background-color: #FFFFFF;
+    color: #666666;
+    border: 1px solid #E0E0E0;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13px;
+}
+
+#botao-limpar-filtros:hover {
+    background-color: #F5F5F5;
+}
+
+/* Lista de mensagens do histórico */
+#historico-lista {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* ============================================================
+   PÁGINA: UTILIZADORES
+   ============================================================ */
+
+/* Área para criar novo utilizador */
+#criar-utilizador-area {
+    background-color: #FFFFFF;
+    border-radius: 10px;
+    padding: 20px;
+    border: 1px solid #E0E0E0;
+    margin-bottom: 20px;
+}
+
+/* Formulário inline (todos os campos em linha) */
+.campo-formulario-inline {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.campo-formulario-inline input,
+.campo-formulario-inline select {
+    padding: 10px 12px;
+    border: 1px solid #E0E0E0;
+    border-radius: 6px;
+    font-size: 13px;
+    outline: none;
+    flex: 1;
+    min-width: 120px;
+}
+
+.campo-formulario-inline input:focus,
+.campo-formulario-inline select:focus {
+    border-color: #FFD200;
+}
+
+.campo-formulario-inline button {
+    padding: 10px 20px;
+    background-color: #FFD200;
+    color: #1D1D1B;
+    border: none;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 13px;
+}
+
+.campo-formulario-inline button:hover {
+    background-color: #E6BD00;
+}
+
+/* Feedback de criação de utilizador */
+#criar-utilizador-feedback {
+    margin-top: 10px;
+    font-size: 13px;
+}
+
+/* Lista de utilizadores */
+#utilizadores-lista {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+/* Card de utilizador */
+.utilizador-card {
+    background-color: #FFFFFF;
+    border: 1px solid #E0E0E0;
+    border-radius: 8px;
+    padding: 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* Info do utilizador */
+.utilizador-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.utilizador-nome {
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.utilizador-detalhes {
+    font-size: 12px;
+    color: #999999;
+}
+
+/* Badge de role */
+.badge-role {
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: bold;
+}
+
+.badge-coordenador {
+    background-color: #FFF3CD;
+    color: #856404;
+}
+
+.badge-operador {
+    background-color: #CCE5FF;
+    color: #004085;
+}
+
+/* ============================================================
+   RESPONSIVIDADE (para ecrãs pequenos)
+   ============================================================ */
+
+/* Se o ecrã for menor que 768px (tablet/telemóvel) */
+@media (max-width: 768px) {
+    /* O layout de duas colunas passa a uma coluna */
+    #enviar-layout {
+        flex-direction: column;
+    }
+
+    /* Os botões de navegação ficam mais pequenos */
+    .nav-botao {
+        font-size: 11px;
+        padding: 6px 10px;
+    }
+
+    /* Os filtros ficam em coluna */
+    #historico-filtros {
+        flex-direction: column;
+    }
+
+    /* O formulário inline fica em coluna */
+    .campo-formulario-inline {
+        flex-direction: column;
+    }
+
+    .campo-formulario-inline input,
+    .campo-formulario-inline select {
+        min-width: 100%;
+    }
+}

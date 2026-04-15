@@ -1,47 +1,88 @@
 <!-- ==========================================================
-  POPUP.HTML — Interface da Extensão (Popup)
+  POPUP.HTML — Janela da Extensão (Operadores)
   ==========================================================
-  O QUE FAZER AQUI:
   Esta é a janela que aparece quando o operador clica no ícone
-  da extensão no browser. É a interface principal para operadores.
-
-  ELEMENTOS A CRIAR:
-
-  1. ESTADO "NÃO LOGADO":
-     - Formulário de login (username + password)
-     - Botão "Entrar"
-     - Mensagem de erro se credenciais inválidas
-
-  2. ESTADO "LOGADO":
-     - Cabeçalho: "Olá, [nome]" + botão "Sair"
-     - Indicador de conexão (🟢 Conectado / 🔴 Desconectado)
-     - Lista das últimas mensagens recebidas (5-10)
-     - Cada mensagem mostra:
-       * Hora de receção
-       * Badge de prioridade
-       * Conteúdo da mensagem
-     - Mensagens de prioridade alta com destaque visual
-
-  DIMENSÕES RECOMENDADAS:
-  - Largura: 350-400px
-  - Altura: 500-600px
-
-  NOTA: O popup fecha quando se clica fora. Os dados devem
-  ser guardados no chrome.storage para persistir.
+  da extensão no browser. Mostra:
+  - Formulário de login (se não está logado)
+  - Lista de mensagens recentes (se está logado)
+  - Indicador de conexão com o servidor
   ========================================================== -->
 
 <!DOCTYPE html>
 <html lang="pt">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Notificações</title>
-  <link rel="stylesheet" href="popup.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notificações Carris</title>
+    <link rel="stylesheet" href="popup.css">
 </head>
 <body>
-  <div id="app">
-    <!-- O conteúdo será gerido pelo popup.ts/popup.js -->
-  </div>
-  <script src="popup.js"></script>
+
+    <!-- Container principal da extensão -->
+    <div id="app">
+
+        <!-- ============================================ -->
+        <!-- SECÇÃO: CABEÇALHO (sempre visível)           -->
+        <!-- ============================================ -->
+        <div id="cabecalho">
+            <span id="cabecalho-logo">🚌</span>
+            <span id="cabecalho-titulo">Carris Notificações</span>
+        </div>
+
+        <!-- ============================================ -->
+        <!-- SECÇÃO: LOGIN (visível quando não logado)    -->
+        <!-- ============================================ -->
+        <div id="secao-login">
+            <p id="login-instrucao">Introduz as tuas credenciais:</p>
+
+            <div class="campo">
+                <label for="campo-username">Utilizador</label>
+                <input type="text" id="campo-username" placeholder="Ex: operador">
+            </div>
+
+            <div class="campo">
+                <label for="campo-password">Password</label>
+                <input type="password" id="campo-password" placeholder="Ex: 1234">
+            </div>
+
+            <div id="login-erro"></div>
+
+            <button id="botao-login" onclick="fazerLogin()">Entrar</button>
+
+            <div id="login-dica">
+                <p>Conta de teste: <strong>operador</strong> / <strong>1234</strong></p>
+            </div>
+        </div>
+
+        <!-- ============================================ -->
+        <!-- SECÇÃO: PRINCIPAL (visível quando logado)    -->
+        <!-- ============================================ -->
+        <div id="secao-principal" style="display: none;">
+
+            <!-- Barra do utilizador -->
+            <div id="barra-utilizador">
+                <div id="info-utilizador">
+                    <span id="nome-utilizador">Olá, Operador</span>
+                    <span id="estado-conexao" class="estado-desconectado">● Desconectado</span>
+                </div>
+                <button id="botao-sair" onclick="fazerLogout()">Sair</button>
+            </div>
+
+            <!-- Lista de mensagens -->
+            <div id="titulo-mensagens">
+                <span>📨 Mensagens Recentes</span>
+                <button id="botao-atualizar" onclick="carregarMensagens()">🔄</button>
+            </div>
+
+            <div id="lista-mensagens">
+                <p class="texto-vazio">A carregar mensagens...</p>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Carregar o JavaScript do popup -->
+    <script src="popup.js"></script>
+
 </body>
 </html>

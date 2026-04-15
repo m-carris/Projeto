@@ -1,54 +1,297 @@
 /* ============================================================
-   POPUP.CSS — Estilos do Popup da Extensão
+   POPUP.CSS — Estilos da Extensão (Popup do Operador)
    ============================================================
-   O QUE FAZER AQUI:
-   Estilizar a interface do popup para ser limpa e funcional.
-
-   SUGESTÕES:
-   1. Corpo do popup (largura fixa, padding)
-   2. Estilos do login (centralizado, limpo)
-   3. Lista de mensagens (scroll, cards)
-   4. Cards com destaque para prioridade alta
-   5. Badge de prioridade colorido
-   6. Indicador de conexão WebSocket
-   7. Botões e inputs estilizados
-
-   EXEMPLO:
-     body {
-       width: 380px;
-       min-height: 400px;
-       font-family: 'Segoe UI', sans-serif;
-       margin: 0;
-       padding: 16px;
-       background: #f8f9fa;
-     }
-
-     .message-card {
-       background: white;
-       border-radius: 8px;
-       padding: 12px;
-       margin-bottom: 8px;
-       box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-     }
-
-     .message-card.alta {
-       border-left: 4px solid #dc3545;
-       background: #fff5f5;
-     }
-
-     .connection-status {
-       display: flex;
-       align-items: center;
-       gap: 6px;
-       font-size: 0.8em;
-       color: #666;
-     }
-
-     .connection-status.connected::before {
-       content: '';
-       width: 8px;
-       height: 8px;
-       border-radius: 50%;
-       background: #28a745;
-     }
+   Paleta de cores Carris:
+   - Amarelo: #FFD200
+   - Preto: #1D1D1B
+   - Branco: #FFFFFF
+   - Cinzentos: #F5F5F5, #E0E0E0, #999999, #333333
+   - Vermelho (alta): #DC3545
    ============================================================ */
+
+/* ---- Reset e corpo ---- */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    width: 380px;
+    min-height: 500px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #F5F5F5;
+    color: #1D1D1B;
+}
+
+/* ---- Cabeçalho ---- */
+/* Barra preta no topo com o logo e nome */
+#cabecalho {
+    background-color: #1D1D1B;
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+#cabecalho-logo {
+    font-size: 22px;
+}
+
+#cabecalho-titulo {
+    color: #FFD200;
+    font-size: 15px;
+    font-weight: bold;
+}
+
+/* ============================================================
+   SECÇÃO DE LOGIN
+   ============================================================ */
+
+#secao-login {
+    padding: 20px 16px;
+}
+
+#login-instrucao {
+    font-size: 13px;
+    color: #666666;
+    margin-bottom: 16px;
+}
+
+/* Cada campo (label + input) */
+.campo {
+    margin-bottom: 12px;
+}
+
+.campo label {
+    display: block;
+    font-size: 12px;
+    font-weight: bold;
+    color: #333333;
+    margin-bottom: 4px;
+}
+
+.campo input {
+    width: 100%;
+    padding: 10px 12px;
+    border: 2px solid #E0E0E0;
+    border-radius: 6px;
+    font-size: 13px;
+    outline: none;
+}
+
+.campo input:focus {
+    border-color: #FFD200;
+}
+
+/* Mensagem de erro no login */
+#login-erro {
+    color: #DC3545;
+    font-size: 12px;
+    margin-bottom: 10px;
+    min-height: 16px;
+}
+
+/* Botão de login */
+#botao-login {
+    width: 100%;
+    padding: 12px;
+    background-color: #FFD200;
+    color: #1D1D1B;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+#botao-login:hover {
+    background-color: #E6BD00;
+}
+
+/* Dica de conta de teste */
+#login-dica {
+    margin-top: 16px;
+    padding: 10px;
+    background-color: #FFFFFF;
+    border-radius: 6px;
+    font-size: 11px;
+    color: #999999;
+    text-align: center;
+}
+
+/* ============================================================
+   SECÇÃO PRINCIPAL (após login)
+   ============================================================ */
+
+#secao-principal {
+    padding: 0 0 12px 0;
+}
+
+/* ---- Barra do utilizador ---- */
+#barra-utilizador {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 16px;
+    background-color: #FFFFFF;
+    border-bottom: 1px solid #E0E0E0;
+}
+
+#info-utilizador {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+#nome-utilizador {
+    font-size: 14px;
+    font-weight: bold;
+    color: #1D1D1B;
+}
+
+/* Estado de conexão */
+#estado-conexao {
+    font-size: 11px;
+}
+
+.estado-conectado {
+    color: #28A745;
+}
+
+.estado-desconectado {
+    color: #DC3545;
+}
+
+/* Botão de sair */
+#botao-sair {
+    padding: 6px 14px;
+    background-color: transparent;
+    border: 1px solid #E0E0E0;
+    border-radius: 6px;
+    color: #666666;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+#botao-sair:hover {
+    background-color: #DC3545;
+    color: #FFFFFF;
+    border-color: #DC3545;
+}
+
+/* ---- Título das mensagens ---- */
+#titulo-mensagens {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px 8px 16px;
+    font-size: 14px;
+    font-weight: bold;
+    color: #333333;
+}
+
+/* Botão de atualizar */
+#botao-atualizar {
+    background: none;
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 4px;
+}
+
+#botao-atualizar:hover {
+    background-color: #E0E0E0;
+}
+
+/* ---- Lista de mensagens ---- */
+#lista-mensagens {
+    padding: 0 12px;
+    max-height: 380px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+/* Texto quando não há mensagens */
+.texto-vazio {
+    text-align: center;
+    color: #999999;
+    font-size: 13px;
+    padding: 30px 0;
+}
+
+/* ---- Card de mensagem ---- */
+.msg-card {
+    background-color: #FFFFFF;
+    border: 1px solid #E0E0E0;
+    border-radius: 8px;
+    padding: 10px 12px;
+    border-left: 3px solid #E0E0E0;
+}
+
+/* Card de mensagem com prioridade ALTA */
+.msg-card-alta {
+    border-left-color: #DC3545;
+    background-color: #FFF8F8;
+}
+
+/* Cabeçalho do card */
+.msg-cabecalho {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+}
+
+/* Data da mensagem */
+.msg-data {
+    font-size: 11px;
+    color: #999999;
+}
+
+/* Badge de prioridade */
+.msg-badge {
+    padding: 2px 6px;
+    border-radius: 10px;
+    font-size: 10px;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.msg-badge-normal {
+    background-color: #E8F5E9;
+    color: #2E7D32;
+}
+
+.msg-badge-alta {
+    background-color: #FFEBEE;
+    color: #C62828;
+}
+
+/* Conteúdo da mensagem */
+.msg-conteudo {
+    font-size: 13px;
+    line-height: 1.4;
+    color: #1D1D1B;
+    margin-bottom: 6px;
+}
+
+/* Rodapé do card */
+.msg-rodape {
+    display: flex;
+    justify-content: space-between;
+    font-size: 10px;
+    color: #999999;
+}
+
+/* Badge de tipo */
+.msg-tipo {
+    padding: 1px 6px;
+    background-color: #F5F5F5;
+    border-radius: 4px;
+    font-size: 10px;
+    color: #666666;
+}

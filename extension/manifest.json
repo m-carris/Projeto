@@ -1,27 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "Notificações Coordenador",
+  "name": "Notificações Carris",
   "version": "1.0.0",
   "description": "Extensão para operadores receberem notificações do coordenador em tempo real.",
-
-  "_INSTRUCOES": "============================================================",
-  "_O_QUE_FAZER": [
-    "O manifest.json é o 'bilhete de identidade' da extensão Chrome.",
-    "Define o nome, permissões, ficheiros e comportamento.",
-    "",
-    "CAMPOS IMPORTANTES:",
-    "- action: define o popup (janela ao clicar no ícone)",
-    "- background: o service worker (corre em segundo plano)",
-    "- permissions: o que a extensão pode fazer",
-    "- host_permissions: a que servidores pode aceder",
-    "",
-    "COMO TESTAR:",
-    "1. Abre chrome://extensions/",
-    "2. Ativa 'Modo de programador' (canto superior direito)",
-    "3. Clica 'Carregar sem compactação'",
-    "4. Seleciona a pasta 'extension'",
-    "5. A extensão aparece no browser!"
-  ],
 
   "action": {
     "default_popup": "popup/popup.html",

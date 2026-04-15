@@ -1,0 +1,282 @@
+<!-- ==========================================================
+  INDEX.HTML — Página Principal do Backoffice (Coordenador)
+  ==========================================================
+  Esta é a interface web que o coordenador usa para:
+  - Fazer login
+  - Enviar mensagens para os operadores
+  - Usar templates de mensagens rápidas
+  - Consultar o histórico de mensagens enviadas
+  
+  É uma página única (Single Page) — mostramos e escondemos
+  secções conforme o estado (logado ou não logado).
+  ========================================================== -->
+
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <!-- Definir a codificação de caracteres (para acentos funcionarem) -->
+    <meta charset="UTF-8">
+
+    <!-- Tornar a página responsiva (adaptar-se ao ecrã) -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Título que aparece no separador do browser -->
+    <title>Carris — Backoffice de Notificações</title>
+
+    <!-- Ligar o nosso ficheiro de estilos CSS -->
+    <link rel="stylesheet" href="estilo.css">
+</head>
+<body>
+
+    <!-- ============================================================ -->
+    <!-- SECÇÃO 1: ECRÃ DE LOGIN                                      -->
+    <!-- Esta secção aparece quando o utilizador NÃO está logado       -->
+    <!-- ============================================================ -->
+    <div id="secao-login">
+        <!-- Caixa central do login -->
+        <div id="login-caixa">
+            <!-- Logo / Título -->
+            <div id="login-cabecalho">
+                <div id="login-logo">🚌</div>
+                <h1>Carris</h1>
+                <p>Sistema de Notificações</p>
+                <p id="login-subtitulo">Backoffice do Coordenador</p>
+            </div>
+
+            <!-- Formulário de Login -->
+            <div id="login-formulario">
+                <!-- Campo do Username -->
+                <div class="campo-formulario">
+                    <label for="login-username">Utilizador</label>
+                    <input type="text" id="login-username" placeholder="Ex: coordenador">
+                </div>
+
+                <!-- Campo da Password -->
+                <div class="campo-formulario">
+                    <label for="login-password">Password</label>
+                    <input type="password" id="login-password" placeholder="Ex: 1234">
+                </div>
+
+                <!-- Mensagem de erro (escondida por padrão) -->
+                <div id="login-erro" class="mensagem-erro"></div>
+
+                <!-- Botão de Entrar -->
+                <button id="login-botao" onclick="fazerLogin()">Entrar</button>
+            </div>
+
+            <!-- Dica para utilizadores de teste -->
+            <div id="login-dica">
+                <p><strong>Contas de teste:</strong></p>
+                <p>Coordenador: <code>coordenador</code> / <code>1234</code></p>
+                <p>Operador: <code>operador</code> / <code>1234</code></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- SECÇÃO 2: PAINEL PRINCIPAL (após login)                       -->
+    <!-- Esta secção só aparece DEPOIS do login bem-sucedido           -->
+    <!-- Inicialmente está escondida (display: none no CSS)            -->
+    <!-- ============================================================ -->
+    <div id="secao-principal" style="display: none;">
+
+        <!-- ---- BARRA DE NAVEGAÇÃO (topo) ---- -->
+        <div id="barra-navegacao">
+            <div id="nav-esquerda">
+                <span id="nav-logo">🚌</span>
+                <span id="nav-titulo">Carris — Notificações</span>
+            </div>
+            <div id="nav-centro">
+                <!-- Botões de navegação entre páginas -->
+                <button class="nav-botao nav-botao-ativo" id="nav-btn-enviar" onclick="mudarPagina('enviar')">
+                    📢 Enviar Mensagem
+                </button>
+                <button class="nav-botao" id="nav-btn-historico" onclick="mudarPagina('historico')">
+                    📜 Histórico
+                </button>
+                <button class="nav-botao" id="nav-btn-utilizadores" onclick="mudarPagina('utilizadores')">
+                    👥 Utilizadores
+                </button>
+            </div>
+            <div id="nav-direita">
+                <!-- Indicador de conexão WebSocket -->
+                <span id="indicador-conexao" class="indicador-desconectado">
+                    🔴 Desconectado
+                </span>
+                <!-- Nome do utilizador e botão de sair -->
+                <span id="nav-nome-utilizador"></span>
+                <button id="nav-botao-sair" onclick="fazerLogout()">Sair</button>
+            </div>
+        </div>
+
+        <!-- ---- CONTEÚDO PRINCIPAL ---- -->
+        <div id="conteudo-principal">
+
+            <!-- ======================================================== -->
+            <!-- PÁGINA: ENVIAR MENSAGEM                                   -->
+            <!-- ======================================================== -->
+            <div id="pagina-enviar" class="pagina">
+
+                <div id="enviar-layout">
+                    <!-- Coluna Esquerda: Formulário de Envio -->
+                    <div id="enviar-formulario-area">
+                        <h2>📢 Enviar Nova Mensagem</h2>
+
+                        <!-- Templates / Mensagens Rápidas -->
+                        <div id="templates-area">
+                            <h3>⚡ Mensagens Rápidas</h3>
+                            <p class="texto-ajuda">Clica num botão para preencher automaticamente:</p>
+                            <div id="templates-botoes">
+                                <!-- Os botões de template são criados pelo JavaScript -->
+                                <p id="templates-loading">A carregar templates...</p>
+                            </div>
+                        </div>
+
+                        <!-- Formulário da Mensagem -->
+                        <div id="formulario-mensagem">
+                            <!-- Campo de conteúdo (o texto da mensagem) -->
+                            <div class="campo-formulario">
+                                <label for="mensagem-conteudo">Mensagem</label>
+                                <textarea id="mensagem-conteudo" rows="4" placeholder="Escreve a mensagem aqui..."></textarea>
+                            </div>
+
+                            <!-- Seleção de prioridade -->
+                            <div class="campo-formulario">
+                                <label>Prioridade</label>
+                                <div id="prioridade-opcoes">
+                                    <button class="prioridade-botao prioridade-selecionada" id="prioridade-normal" onclick="selecionarPrioridade('normal')">
+                                        🟢 Normal
+                                    </button>
+                                    <button class="prioridade-botao" id="prioridade-alta" onclick="selecionarPrioridade('alta')">
+                                        🔴 Alta (Urgente)
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Seleção de tipo -->
+                            <div class="campo-formulario">
+                                <label for="mensagem-tipo">Tipo</label>
+                                <select id="mensagem-tipo">
+                                    <option value="geral">Geral</option>
+                                    <option value="acidente">Acidente</option>
+                                    <option value="transito">Trânsito</option>
+                                    <option value="avaria">Avaria</option>
+                                    <option value="desvio">Desvio</option>
+                                </select>
+                            </div>
+
+                            <!-- Destinatário -->
+                            <div class="campo-formulario">
+                                <label for="mensagem-destinatario">Destinatário</label>
+                                <select id="mensagem-destinatario">
+                                    <option value="todos">Todos os Operadores</option>
+                                </select>
+                            </div>
+
+                            <!-- Mensagem de sucesso/erro -->
+                            <div id="enviar-feedback"></div>
+
+                            <!-- Botão de enviar -->
+                            <button id="botao-enviar" onclick="enviarMensagem()">
+                                📤 Enviar Mensagem
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Coluna Direita: Últimas Mensagens Enviadas -->
+                    <div id="ultimas-mensagens-area">
+                        <h2>📨 Últimas Mensagens</h2>
+                        <div id="ultimas-mensagens-lista">
+                            <p class="texto-ajuda">Nenhuma mensagem enviada ainda.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ======================================================== -->
+            <!-- PÁGINA: HISTÓRICO DE MENSAGENS                            -->
+            <!-- ======================================================== -->
+            <div id="pagina-historico" class="pagina" style="display: none;">
+                <h2>📜 Histórico de Mensagens</h2>
+
+                <!-- Barra de Filtros -->
+                <div id="historico-filtros">
+                    <!-- Pesquisa por texto -->
+                    <div class="filtro-campo">
+                        <label for="filtro-pesquisa">🔍 Pesquisar</label>
+                        <input type="text" id="filtro-pesquisa" placeholder="Procurar no texto...">
+                    </div>
+
+                    <!-- Filtro por prioridade -->
+                    <div class="filtro-campo">
+                        <label for="filtro-prioridade">📊 Prioridade</label>
+                        <select id="filtro-prioridade">
+                            <option value="">Todas</option>
+                            <option value="normal">Normal</option>
+                            <option value="alta">Alta</option>
+                        </select>
+                    </div>
+
+                    <!-- Filtro por data -->
+                    <div class="filtro-campo">
+                        <label for="filtro-data">📅 Data</label>
+                        <input type="date" id="filtro-data">
+                    </div>
+
+                    <!-- Botão de pesquisar -->
+                    <button id="botao-filtrar" onclick="pesquisarHistorico()">Pesquisar</button>
+                    <button id="botao-limpar-filtros" onclick="limparFiltros()">Limpar</button>
+                </div>
+
+                <!-- Lista de Mensagens do Histórico -->
+                <div id="historico-lista">
+                    <p class="texto-ajuda">Usa os filtros acima para pesquisar mensagens.</p>
+                </div>
+            </div>
+
+            <!-- ======================================================== -->
+            <!-- PÁGINA: GESTÃO DE UTILIZADORES                            -->
+            <!-- ======================================================== -->
+            <div id="pagina-utilizadores" class="pagina" style="display: none;">
+                <h2>👥 Gestão de Utilizadores</h2>
+
+                <!-- Formulário para criar novo utilizador -->
+                <div id="criar-utilizador-area">
+                    <h3>➕ Criar Novo Utilizador</h3>
+                    <div id="criar-utilizador-formulario">
+                        <div class="campo-formulario-inline">
+                            <input type="text" id="novo-username" placeholder="Username">
+                            <input type="password" id="novo-password" placeholder="Password">
+                            <input type="text" id="novo-nome" placeholder="Nome completo">
+                            <select id="novo-role">
+                                <option value="operador">Operador</option>
+                                <option value="coordenador">Coordenador</option>
+                            </select>
+                            <button onclick="criarUtilizador()">Criar</button>
+                        </div>
+                        <div id="criar-utilizador-feedback"></div>
+                    </div>
+                </div>
+
+                <!-- Lista de utilizadores existentes -->
+                <div id="utilizadores-lista">
+                    <p class="texto-ajuda">A carregar utilizadores...</p>
+                </div>
+            </div>
+
+        </div><!-- fim conteudo-principal -->
+
+    </div><!-- fim secao-principal -->
+
+    <!-- ============================================================ -->
+    <!-- SCRIPTS                                                       -->
+    <!-- Carregar o Socket.io (para mensagens em tempo real)           -->
+    <!-- O Socket.io é servido automaticamente pelo backend            -->
+    <!-- ============================================================ -->
+    <script src="/socket.io/socket.io.js"></script>
+
+    <!-- Carregar o nosso JavaScript principal -->
+    <script src="aplicacao.js"></script>
+
+</body>
+</html>

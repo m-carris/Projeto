@@ -1,13 +1,16 @@
 {
   "name": "notificacoes-backend",
   "version": "1.0.0",
-  "description": "Backend do Sistema de Notificações do Coordenador — API REST + WebSockets com NestJS",
+  "description": "Backend do Sistema de Notificações do Coordenador — Servidor Express + Socket.io",
+  "main": "servidor.js",
   "scripts": {
-    "start": "nest start",
-    "start:dev": "nest start --watch",
-    "build": "nest build",
-    "test": "jest"
+    "start": "node servidor.js"
   },
-  "dependencies": {},
-  "devDependencies": {}
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "socket.io": "^4.7.4",
+    "jsonwebtoken": "^9.0.2",
+    "bcryptjs": "^2.4.3"
+  }
 }
