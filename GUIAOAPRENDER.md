@@ -67,27 +67,28 @@ Se aparecer algo como `v18.17.0` ou superior, está tudo bem.
  │                           │
  │  3. Recebe a mensagem     │
  │  4. Guarda no ficheiro    │
- │  5. Avisa toda a gente    │
- │     via Socket.io         │
+ │  5. Envia notificação     │
+ │     push via Web Push     │
  └──────────┬────────────────┘
             │
-            │  Socket.io → 'nova-mensagem'
+            │  Web Push (instantâneo)
             ▼
  ┌──────────────────────────┐
  │  OPERADORES               │
  │  (Extensão de Browser)    │
  │                           │
- │  6. Recebem a mensagem    │
+ │  6. Recebem a notificação │
+ │     push instantaneamente │
  │  7. Veem notificação push │
  │  8. Consultam no popup    │
  └───────────────────────────┘
 ```
 
-### Dois canais de comunicação
+### Três canais de comunicação
 
 - **HTTP (REST API):** Para enviar dados (login, criar mensagens, buscar histórico). É como enviar uma carta — pedimos e esperamos resposta.
 - **Socket.io (WebSocket):** Para notificações em tempo real no backoffice. É como um walkie-talkie — quando o servidor tem algo novo, avisa imediatamente.
-- **Polling (Extensão):** A extensão verifica o servidor periodicamente (a cada 1 minuto) porque os Service Workers do Chrome não mantêm conexões permanentes.
+- **Web Push (Extensão):** Quando o servidor cria uma nova mensagem, envia instantaneamente uma notificação push para todos os operadores registados, usando a biblioteca `web-push` com chaves VAPID. O operador recebe a notificação de imediato, mesmo que o browser não esteja com a página aberta.
 
 ### Estrutura de Pastas e Ficheiros
 
@@ -129,15 +130,15 @@ Projeto/
 
 | Ficheiro | O que faz |
 |----------|-----------|
-| `backend/package.json` | Lista as dependências (Express, Socket.io, JWT, bcryptjs) e o script de arranque |
-| `backend/servidor.js` | O ficheiro principal — cria o servidor, define rotas da API, liga o Socket.io |
+| `backend/package.json` | Lista as dependências (Express, Socket.io, JWT, bcryptjs, web-push) e o script de arranque |
+| `backend/servidor.js` | O ficheiro principal — cria o servidor, define rotas da API, liga o Socket.io, configura Web Push e envia notificações instantâneas |
 | `backend/basededados.js` | Funções para ler/escrever nos ficheiros JSON (a nossa "base de dados") |
 | `backoffice/index.html` | A estrutura HTML da página do coordenador (login, formulário, histórico) |
 | `backoffice/estilo.css` | Todos os estilos visuais com a paleta de cores Carris |
 | `backoffice/aplicacao.js` | Toda a lógica: login, envio de mensagens, templates, histórico, Socket.io |
 | `extension/manifest.json` | Configuração da extensão: permissões, ícones, scripts |
 | `extension/popup/popup.js` | Lógica do popup: login do operador, mostrar mensagens |
-| `extension/background/service-worker.js` | Verificação periódica de mensagens + notificações push |
+| `extension/background/service-worker.js` | Recebe notificações push instantaneamente via Web Push + mostra notificações |
 
 ---
 
@@ -186,7 +187,8 @@ Cria o ficheiro `backend/package.json` com o seguinte conteúdo:
     "cors": "^2.8.5",
     "socket.io": "^4.7.4",
     "jsonwebtoken": "^9.0.2",
-    "bcryptjs": "^2.4.3"
+    "bcryptjs": "^2.4.3",
+    "web-push": "^3.6.7"
   }
 }
 ```
@@ -204,6 +206,7 @@ Cria o ficheiro `backend/package.json` com o seguinte conteúdo:
   - **socket.io** — Comunicação em tempo real via WebSocket.
   - **jsonwebtoken** — Criar e verificar tokens JWT para autenticação.
   - **bcryptjs** — Encriptar passwords de forma segura.
+  - **web-push** — Enviar notificações push instantaneamente para os browsers dos operadores, usando o protocolo Web Push com chaves VAPID.
 
 Agora instala as dependências. No terminal, dentro da pasta `backend`:
 
@@ -643,6 +646,14 @@ const path = require('path');
 // Estas funções foram definidas no ficheiro basededados.js
 const baseDeDados = require('./basededados');
 
+// web-push permite enviar notificações push para os browsers
+// dos operadores de forma instantânea, usando chaves VAPID
+const webpush = require('web-push');
+
+// fs (File System) é um módulo do Node.js para ler e escrever ficheiros
+// Usamos para guardar as subscrições push dos operadores num ficheiro
+const fs = require('fs');
+
 // ============================================================
 // PASSO 2: Configurações do servidor
 // ============================================================
@@ -709,6 +720,64 @@ app.use(express.static(path.join(__dirname, '..', 'backoffice')));
 // Antes de aceitar pedidos, garantimos que os ficheiros da
 // base de dados existem e têm os dados iniciais
 baseDeDados.inicializarDados();
+
+// ============================================================
+// PASSO 5.1: Configuração Web Push (VAPID) + Subscrições
+// ============================================================
+// Web Push permite enviar notificações instantâneas para os
+// browsers dos operadores, sem precisar de polling.
+//
+// VAPID (Voluntary Application Server Identification) autentica
+// o nosso servidor junto dos serviços de push dos browsers.
+//
+// Para gerar as tuas próprias chaves VAPID, corre no terminal:
+//   npx web-push generate-vapid-keys
+
+const publicVapidKey = 'BHyQ6qiwF5mpl_353Mx2Hlt56MjNihxrOj3c8uxqj7kUYUQ58vwC7vqCBOswVi4nHlPmoiS8Ikvnn5yZxNSZgF4';
+const privateVapidKey = '8wDckGrV1qCHnb5yEyGm-WGKfOzbv7XUsANNn3R8DNQ';
+
+webpush.setVapidDetails('mailto:goncalo.alberto@carris.pt', publicVapidKey, privateVapidKey);
+
+// Ficheiro onde guardamos as subscrições push dos operadores
+const subscriptionsFile = path.join(__dirname, 'subscriptions.json');
+
+// Carregar subscrições existentes ao arrancar o servidor
+function loadSubscriptions() {
+    if (fs.existsSync(subscriptionsFile)) {
+        try {
+            let data = fs.readFileSync(subscriptionsFile, 'utf8');
+            return JSON.parse(data);
+        } catch (err) {
+            console.error('Erro ao ler subscrições:', err);
+            return [];
+        }
+    }
+    return [];
+}
+
+// Guardar subscrições no ficheiro
+function saveSubscriptions(subs) {
+    try {
+        fs.writeFileSync(subscriptionsFile, JSON.stringify(subs, null, 2));
+    } catch (err) {
+        console.error('Erro ao guardar subscrições:', err);
+    }
+}
+
+let subscriptions = loadSubscriptions();
+
+// ---- POST /subscribe ----
+// O que faz: Regista a subscrição push de um operador
+// Quando um operador ativa as notificações na extensão,
+// o browser gera uma subscrição push e envia-a para este endpoint.
+// O servidor guarda-a para poder enviar notificações depois.
+app.post('/subscribe', function(req, res) {
+    let subscription = req.body;
+    subscriptions.push(subscription);
+    saveSubscriptions(subscriptions);
+    console.log('🔔 Nova subscrição push registada');
+    res.status(201).json({});
+});
 
 // ============================================================
 // PASSO 6: Função "Segurança" — Verificar Token JWT
@@ -1030,6 +1099,21 @@ app.post('/messages', verificarToken, function(req, res) {
     // io.emit envia a mensagem para TODOS os clientes conectados
     // via Socket.io. É como gritar num altifalante para todos ouvirem.
     io.emit('nova-mensagem', novaMensagem);
+
+    // *** NOTIFICAÇÕES PUSH INSTANTÂNEAS ***
+    // Além do Socket.io, enviamos também uma notificação push
+    // para todos os operadores registados via Web Push.
+    // Isto garante que os operadores recebem a notificação
+    // instantaneamente, mesmo que não estejam com a página aberta.
+    let pushPayload = JSON.stringify({
+        title: 'Nova mensagem: ' + tipo,
+        body: conteudo
+    });
+
+    subscriptions.forEach(function(sub) {
+        webpush.sendNotification(sub, pushPayload)
+            .catch(function(err) { console.error('Erro no push:', err); });
+    });
 
     // Devolver a mensagem criada como resposta
     res.status(201).json(novaMensagem);
@@ -1391,9 +1475,11 @@ servidor.listen(PORTA, function() {
 - **JWT (JSON Web Token)** — Token que o utilizador recebe ao fazer login. Em cada pedido seguinte, envia esse token para provar quem é.
 - **Socket.io** — Biblioteca que permite comunicação bidirecional em tempo real. O servidor pode "empurrar" dados para os clientes sem eles pedirem.
 - **`io.emit('nova-mensagem', dados)`** — Envia uma mensagem para TODOS os clientes conectados via Socket.io.
+- **Web Push + VAPID** — Protocolo que permite ao servidor enviar notificações instantâneas para os browsers dos operadores, mesmo que a página não esteja aberta. As chaves VAPID autenticam o servidor.
+- **`webpush.sendNotification()`** — Envia uma notificação push para um browser específico usando a sua subscrição.
 - **Soft Delete** — Em vez de apagar dados de verdade, marcamos como `ativo: false`. Isto permite recuperar dados se necessário.
 
-✅ **O que conseguiste neste passo:** Criaste o servidor completo com todas as rotas da API, autenticação JWT, e comunicação em tempo real via Socket.io.
+✅ **O que conseguiste neste passo:** Criaste o servidor completo com todas as rotas da API, autenticação JWT, comunicação em tempo real via Socket.io, e notificações push instantâneas via Web Push.
 
 ---
 
@@ -1875,7 +1961,7 @@ Permite que o popup envie mensagens ao service worker (e vice-versa). Funciona c
 
 ### Passo 11 — Criar o Service Worker da extensão (`extension/background/service-worker.js`)
 
-O Service Worker é o "motor" da extensão que corre em segundo plano. É ele que verifica periodicamente se há novas mensagens e mostra notificações push.
+O Service Worker é o "motor" da extensão que corre em segundo plano. É ele que recebe as notificações push enviadas pelo servidor e as mostra ao operador instantaneamente.
 
 Cria o ficheiro `extension/background/service-worker.js` copiando o código original do repositório em `extension/background/service-worker.js`.
 
@@ -1883,25 +1969,26 @@ O ficheiro está organizado em 7 passos:
 
 | Passo | O que faz |
 |-------|-----------|
-| 1 | Define constantes (endereço do servidor, nome do alarme) |
+| 1 | Define constantes (endereço do servidor, chave VAPID pública) |
 | 2 | Ouve mensagens do popup (LOGIN, LOGOUT, ESTADO) |
-| 3 | Ouve o alarme — quando dispara, verifica novas mensagens |
-| 4 | Verifica novas mensagens — Busca do servidor, compara com as anteriores |
+| 3 | Regista a subscrição push no servidor — envia a subscrição para `POST /subscribe` |
+| 4 | Ouve o evento `push` — quando o servidor envia uma notificação, recebe-a instantaneamente |
 | 5 | Mostra notificação push — Cria uma notificação no browser |
-| 6 | Quando a extensão é instalada — Reinicia o alarme se já havia sessão |
-| 7 | Quando o service worker "acorda" — Garante que o alarme está ativo |
+| 6 | Quando a extensão é instalada — Regista a subscrição push se já havia sessão |
+| 7 | Quando o service worker "acorda" — Garante que a subscrição push está ativa |
 
 **Conceitos-chave:**
 
 - **Service Worker** — Script que corre em segundo plano, mesmo quando o popup está fechado. No Manifest V3, pode ser terminado pelo browser a qualquer momento para poupar recursos.
-- **`chrome.alarms`** — API para criar "despertadores" que disparam periodicamente. Usamos um alarme a cada 1 minuto para verificar novas mensagens.
-- **Polling** — Técnica onde o cliente verifica o servidor periodicamente. Usamos polling em vez de WebSocket direto porque os Service Workers do Chrome Manifest V3 não mantêm conexões permanentes.
-- **`chrome.notifications.create()`** — Cria uma notificação push no browser do operador.
-- **`requireInteraction: true`** — Para mensagens de prioridade alta, a notificação não desaparece sozinha — o operador tem de a fechar manualmente.
+- **Web Push** — Protocolo que permite ao servidor enviar notificações instantaneamente para o browser do operador, sem necessidade de polling. O servidor usa `webpush.sendNotification()` e o service worker recebe o evento `push`.
+- **Subscrição Push** — Quando o operador ativa as notificações, o browser gera uma subscrição push (com endpoint e chaves). Esta subscrição é enviada ao servidor via `POST /subscribe` para que o servidor a possa usar para enviar notificações.
+- **VAPID** — Par de chaves criptográficas que identifica o servidor junto dos serviços de push. A chave pública é usada no service worker para criar a subscrição; a chave privada fica no servidor.
+- **`self.addEventListener('push', ...)`** — Evento que dispara quando o servidor envia uma notificação push. O service worker recebe o payload e mostra a notificação.
+- **`self.registration.showNotification()`** — Mostra uma notificação push nativa do browser ao operador.
 - **`chrome.runtime.onInstalled`** — Evento que dispara quando a extensão é instalada pela primeira vez ou atualizada.
 - **`chrome.runtime.onStartup`** — Evento que dispara quando o browser abre (e o service worker "acorda").
 
-✅ **O que conseguiste neste passo:** Criaste o service worker que verifica periodicamente novas mensagens e mostra notificações push no browser dos operadores.
+✅ **O que conseguiste neste passo:** Criaste o service worker que recebe notificações push instantâneas do servidor e as mostra ao operador, sem qualquer atraso.
 
 ---
 
@@ -1939,6 +2026,7 @@ Ao longo deste guião, aprendeste estes conceitos fundamentais:
 | **JWT (JSON Web Token)** | Token que prova a identidade do utilizador após o login |
 | **bcryptjs** | Biblioteca para encriptar passwords de forma irreversível |
 | **Socket.io** | Biblioteca para comunicação em tempo real via WebSocket |
+| **web-push** | Biblioteca para enviar notificações push instantâneas usando o protocolo Web Push com chaves VAPID |
 | **CORS** | Mecanismo que permite pedidos de origens diferentes (cross-origin) |
 | **Soft Delete** | Em vez de apagar dados, marcamos como inativos (`ativo: false`) |
 
@@ -1959,10 +2047,11 @@ Ao longo deste guião, aprendeste estes conceitos fundamentais:
 | **Manifest V3** | Formato atual de configuração de extensões Chrome |
 | **Service Worker** | Script que corre em segundo plano, pode ser terminado pelo browser |
 | **chrome.storage** | Armazenamento persistente específico para extensões |
-| **chrome.alarms** | API para criar "despertadores" que disparam periodicamente |
-| **chrome.notifications** | API para mostrar notificações push no browser |
+| **Web Push** | Protocolo que permite ao servidor enviar notificações instantâneas, sem polling |
+| **VAPID** | Par de chaves criptográficas que autenticam o servidor junto dos serviços de push |
+| **Subscrição Push** | Objeto gerado pelo browser com endpoint e chaves para receber notificações |
+| **`self.registration.showNotification()`** | Mostra uma notificação push nativa do browser |
 | **chrome.runtime.sendMessage** | Comunicação entre popup e service worker |
-| **Polling** | Verificação periódica do servidor (alternativa ao WebSocket) |
 
 ---
 
@@ -1975,6 +2064,7 @@ Verifica que criaste todos os ficheiros:
 - [ ] `backend/basededados.js`
 - [ ] `backend/servidor.js`
 - [ ] `backend/dados/` (pasta — criada automaticamente pelo servidor)
+- [ ] `backend/subscriptions.json` (ficheiro — criado automaticamente quando o primeiro operador se regista)
 
 ### Backoffice
 - [ ] `backoffice/index.html`
@@ -2020,7 +2110,7 @@ Verifica que criaste todos os ficheiros:
 4. **Testar o fluxo completo:**
    - No backoffice, envia uma mensagem
    - A mensagem deve aparecer na lista de "Últimas Mensagens" (backoffice)
-   - Dentro de 1 minuto, a extensão deve mostrar uma notificação push
+   - A extensão deve mostrar uma notificação push instantaneamente
    - Abre o popup da extensão para ver a mensagem na lista
 
 **Se tudo funcionar, parabéns! 🎉 Recriaste o sistema completo do zero!**
